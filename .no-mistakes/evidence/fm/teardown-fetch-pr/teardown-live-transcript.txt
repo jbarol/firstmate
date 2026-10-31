@@ -1,0 +1,120 @@
+
+== S1: BEFORE the fix (base commit): landed from another clone with stale refs is refused
+  exit=1 elapsed=2.5s
+  | REFUSED: local-only worktree <lab>/lab-s-base/wt has work not yet merged into main and not on any remote.
+  ok: base script refuses (reproduces the bug)
+
+== S2: AFTER the fix, mode=local-only: landed on non-default branch from another clone, no manual fetch
+  ok: tracking ref absent beforehand
+  exit=0 elapsed=6.3s
+  ok: teardown completes, slot returned, record cleared
+  ok: endpoint tmux window closed
+
+== S3: AFTER the fix, mode=direct-PR: landed on non-default branch from another clone, no manual fetch
+  ok: tracking ref absent beforehand
+  exit=0 elapsed=7.2s
+  ok: teardown completes, slot returned, record cleared
+  ok: endpoint tmux window closed
+
+== S4: AFTER the fix, mode=no-mistakes: landed on non-default branch from another clone, no manual fetch
+  ok: tracking ref absent beforehand
+  exit=0 elapsed=7.0s
+  ok: teardown completes, slot returned, record cleared
+  ok: endpoint tmux window closed
+
+== S5: Remote unreachable (path gone): refuses and names the remote
+  exit=1 elapsed=2.6s
+  | REFUSED: local-only worktree <lab>/lab-s-dead/wt has work not yet merged into main and not on any remote.
+  | Could not refresh remote: origin. This verdict used the last-known refs, so the work may be there; retry once the remote is reachable.
+  ok: refused, nothing destroyed
+  ok: names origin
+
+== S6: Same failure in direct-PR mode names the remote
+  exit=1 elapsed=2.9s
+  | REFUSED: worktree <lab>/lab-s-dead-pr/wt has work not on any remote and not landed.
+  | Could not refresh remote: origin. This verdict used the last-known refs, so the work may be there; retry once the remote is reachable.
+  ok: refused, nothing destroyed
+  ok: names origin
+
+== S7: Hung remote (real TCP black hole): cut at 30s, refuses, leaves no process
+  exit=1 elapsed=32.3s
+  | REFUSED: local-only worktree <lab>/lab-s-hang/wt has work not yet merged into main and not on any remote.
+  | Could not refresh remote: origin. This verdict used the last-known refs, so the work may be there; retry once the remote is reachable.
+  ok: fetch really reached the hung remote
+  ok: refused, nothing destroyed
+  ok: names origin
+  ok: elapsed is about the 30s bound (29-45s)
+  ok: no surviving git process for that remote
+
+== S8: Password-protected remote under a real terminal: no prompt, refuses fast
+  exit=1 elapsed=1.0s
+  | REFUSED: local-only worktree <lab>/lab-s-auth/wt has work not yet merged into main and not on any remote.
+  | Could not refresh remote: origin. This verdict used the last-known refs, so the work may be there; retry once the remote is reachable.
+  ok: did not wait for a password
+  ok: no password prompt shown
+  ok: refused and names origin
+  ok: work kept
+
+== S9: One remote dead, work proven on the other: teardown completes
+  exit=0 elapsed=1.9s
+  ok: completes
+
+== S10: Work nowhere, fork dead, origin live: refuses naming only the fork
+  exit=1 elapsed=0.8s
+  | REFUSED: local-only worktree <lab>/lab-s-mixed-no/wt has work not yet merged into main and not on any remote.
+  | Could not refresh remote: fork. This verdict used the last-known refs, so the work may be there; retry once the remote is reachable.
+  ok: refused, nothing destroyed
+  ok: names fork
+  ok: does not blame origin
+
+== S11: Both remotes dead: refusal names both
+  exit=1 elapsed=0.8s
+  | REFUSED: local-only worktree <lab>/lab-s-both/wt has work not yet merged into main and not on any remote.
+  | Could not refresh remote: fork, origin. This verdict used the last-known refs, so the work may be there; retry once the remote is reachable.
+  ok: names both
+  ok: refused
+
+== S12: Refresh succeeds but commits are on no remote: still refuses, reports no failure
+  exit=1 elapsed=0.7s
+  | REFUSED: local-only worktree <lab>/lab-s-unlanded/wt has work not yet merged into main and not on any remote.
+  ok: refused, nothing destroyed
+  ok: no refresh-failure note
+
+== S13: Landed commits plus uncommitted file: refuses, no network, file kept
+  exit=1 elapsed=0.8s
+  | REFUSED: local-only worktree <lab>/lab-s-dirty/wt has work not yet merged into main and not on any remote.
+  ok: refused, nothing destroyed
+  ok: uncommitted file kept
+  ok: no refresh ran
+
+== S14: Remote dropped a branch, fetch.prune=true: refresh keeps the tracking ref
+  exit=1 elapsed=0.9s
+  | REFUSED: local-only worktree <lab>/lab-s-prune/wt has work not yet merged into main and not on any remote.
+  ok: refused (work not landed)
+  ok: dropped branch ref still there
+
+== S15: Commits held only by the no-mistakes gate remote: refuses, gate never fetched
+  exit=1 elapsed=0.8s
+  | REFUSED: local-only worktree <lab>/lab-s-gate/wt has work not yet merged into main and not on any remote.
+  ok: refused, nothing destroyed
+  ok: no gate tracking ref created
+
+== S16: No remote at all: refuses without error noise
+  exit=1 elapsed=0.7s
+  | REFUSED: local-only worktree <lab>/lab-s-noremote/wt has work not yet merged into main and not on any remote.
+  ok: refused, nothing destroyed
+  ok: no refresh-failure note
+
+== S17: Work the refs already show: teardown makes no refresh (remote would hang it)
+  exit=0 elapsed=1.7s
+  ok: completes
+  ok: hung remote never contacted by the landed-work check
+
+== S18: --force with a hung remote still discards as the captain authorized
+  exit=0 elapsed=1.7s
+  ok: completes
+  note: black-hole connections during --force: 0
+
+SCENARIOS=18 CHECK_FAILURES=0
+
+
