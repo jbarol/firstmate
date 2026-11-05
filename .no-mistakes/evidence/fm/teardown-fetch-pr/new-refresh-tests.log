@@ -1,0 +1,10 @@
+ok - work landed on another origin branch from another clone is proven after a refresh
+ok - a failed refresh refuses and names the remote it could not reach
+ok - commits on no remote branch still refuse after a successful refresh
+ok - uncommitted work refuses even when the commits have landed
+ok - a file saved during the refresh refuses teardown and survives
+ok - a project with no remote refuses as before and fetches nothing
+ok - the refresh keeps a dropped branch's tracking ref even with fetch.prune set
+ok - work the tracking refs already show adds no network call
+ok - a hung refresh is cut off at its bound and refuses
+ok - commits held only by the no-mistakes gate are not refreshed into landed

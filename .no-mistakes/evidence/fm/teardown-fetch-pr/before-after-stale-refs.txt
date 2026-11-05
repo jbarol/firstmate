@@ -1,0 +1,25 @@
+--- [BASE] mode=local-only: commits pushed to origin/release from another clone; this copy's refs are stale
+$ git log HEAD --not --remotes (before teardown):
+0e18f5a add feature.txt
+$ fm-teardown.sh task-x1  -> exit 1
+  REFUSED: local-only worktree /private/var/folders/95/t7ql0lqj7p97ggs_02mhy86c0000gn/T/fm-teardown-tests.LRRncQ/ba-BASE-local-only/wt has work not yet merged into main and not on any remote.
+  Merge the branch into local main first (bin/fm-merge-local.sh after the captain approves), or push to a fork/remote, or get the captain's explicit OK to discard, then --force.
+worktree still on disk: yes; refs now show work: no
+--- [FIX] mode=local-only: commits pushed to origin/release from another clone; this copy's refs are stale
+$ git log HEAD --not --remotes (before teardown):
+48762ae add feature.txt
+$ fm-teardown.sh task-x1  -> exit 0
+worktree still on disk: yes; refs now show work: yes
+--- [BASE] mode=no-mistakes: commits pushed to origin/release from another clone; this copy's refs are stale
+$ git log HEAD --not --remotes (before teardown):
+ea34536 add feature.txt
+$ fm-teardown.sh task-x1  -> exit 1
+  REFUSED: worktree /private/var/folders/95/t7ql0lqj7p97ggs_02mhy86c0000gn/T/fm-teardown-tests.LRRncQ/ba-BASE-no-mistakes/wt has work not on any remote and not landed.
+  unpushed commits:
+  Push the branch, land its PR, or get the captain's explicit OK to discard, then --force.
+worktree still on disk: yes; refs now show work: no
+--- [FIX] mode=no-mistakes: commits pushed to origin/release from another clone; this copy's refs are stale
+$ git log HEAD --not --remotes (before teardown):
+d180570 add feature.txt
+$ fm-teardown.sh task-x1  -> exit 0
+worktree still on disk: yes; refs now show work: yes
